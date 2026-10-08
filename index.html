@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script src="https://telegram.org/js/telegram-web-app.js?64"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#101615" />
+    <title>Lantern Garden</title>
+    
+  <link rel="stylesheet" crossorigin href="./chunk-xgpyvf05.css"><script type="module" crossorigin src="./chunk-jvfne2cc.js"></script></head>
+  <body>
+    <svg class="ui-symbols" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+      <symbol id="ui-flower" viewBox="0 0 40 40"><path d="M20 18C15 13 15 5 20 3c5 2 5 10 0 15Zm2 2c5-5 13-5 15 0-2 5-10 5-15 0Zm-2 2c5 5 5 13 0 15-5-2-5-10 0-15Zm-2-2c-5 5-13 5-15 0 2-5 10-5 15 0Z"/><circle cx="20" cy="20" r="2.2"/></symbol>
+      <symbol id="ui-cross" viewBox="0 0 40 40"><path d="M15.5 5.5a4.5 4.5 0 0 1 9 0v10h10a4.5 4.5 0 0 1 0 9h-10v10a4.5 4.5 0 0 1-9 0v-10h-10a4.5 4.5 0 0 1 0-9h10Z"/></symbol>
+      <symbol id="ui-star" viewBox="0 0 40 40"><path d="M20 2.5 25 15l12.5 5L25 25l-5 12.5L15 25 2.5 20 15 15Z"/></symbol>
+      <symbol id="ui-leaf" viewBox="0 0 40 40"><path d="M6 33V20C6 10 16 5 34 6v13c0 10-10 15-28 14Z"/><path d="M7 32 32 8"/></symbol>
+      <symbol id="ui-settings" viewBox="0 0 40 40"><path d="M7 11h26M7 20h26M7 29h26"/><circle cx="15" cy="11" r="3"/><circle cx="26" cy="20" r="3"/><circle cx="18" cy="29" r="3"/></symbol>
+    </svg>
+    <section id="file-warning" class="file-warning" hidden>
+      <h1>Lantern Garden</h1>
+      <p>This game needs a tiny local server. In the project folder, run <code>sh bin/play</code>, then open the address it prints.</p>
+    </section>
+
+    <main id="game" class="game">
+      <div class="night-veil" aria-hidden="true"></div>
+      <div class="sky" aria-hidden="true"><div class="night-haze"></div></div>
+      <div class="day-passage" aria-hidden="true"></div>
+      <span class="passing-sun" aria-hidden="true"></span>
+
+      <section id="prelude" class="prelude" aria-label="A single lantern">
+        <div id="prelude-light-field" class="prelude-light-field">
+        <div class="prelude-neighbors" aria-hidden="true">
+          <span class="prelude-echo echo-top"><span class="lantern-body"><span class="lantern-core"></span></span></span>
+          <span class="prelude-echo echo-right"><span class="lantern-body"><span class="lantern-core"></span></span></span>
+          <span class="prelude-echo echo-bottom"><span class="lantern-body"><span class="lantern-core"></span></span></span>
+          <span class="prelude-echo echo-left"><span class="lantern-body"><span class="lantern-core"></span></span></span>
+        </div>
+        <button id="first-lantern" class="lantern prelude-lantern" type="button" aria-label="Unlit lantern. Press to light it">
+          <span class="lantern-body" aria-hidden="true"><span class="lantern-core"></span></span>
+        </button>
+        </div>
+        <p id="intro-cue" class="cue" role="status" aria-live="polite"></p>
+      </section>
+
+      <section id="puzzle" class="puzzle" aria-label="Lantern Garden puzzle" hidden>
+        <header class="game-header">
+          <h1 class="visually-hidden">Lantern Garden</h1>
+          <div id="garden-marks" class="garden-marks">
+            <div id="progress" class="progress" aria-label="Garden 1 of 6"></div>
+            <div id="move-goal" class="move-goal" role="status" aria-live="polite" aria-describedby="goal-tip" tabindex="0"></div>
+            <span id="goal-tip" class="goal-tip" role="tooltip">Light the garden in this many moves.</span>
+            <div id="area-navigation" class="area-navigation" hidden>
+              <button id="header-fold" class="area-fold" type="button" aria-label="Collapse completed gardens">✦</button>
+              <button id="header-beyond" class="area-beyond" type="button" aria-label="Open the next area preview" hidden><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3 29 16 16 29 3 16Z"/></svg></button>
+              <span id="header-further" class="area-further" aria-label="Further areas"></span>
+            </div>
+          </div>
+          <button id="help" class="icon-button quiet" type="button" aria-label="Help and garden choices" aria-haspopup="dialog">
+            <span class="icon icon-help" aria-hidden="true"></span>
+          </button>
+        </header>
+
+        <div class="playfield">
+          <div id="board" class="board" role="group" aria-label="Four by four lantern board"></div>
+          <p id="play-cue" class="cue play-cue" role="status" aria-live="polite"></p>
+        </div>
+
+        <div id="play-tools" class="play-tools">
+          <button id="undo" class="icon-button" type="button" aria-label="Undo last press" hidden>
+            <span class="icon icon-undo" aria-hidden="true"></span>
+          </button>
+          <button id="hint" class="icon-button" type="button" aria-label="Show a shortest next press" hidden>
+            <svg class="hint-ring" viewBox="0 0 64 64" aria-hidden="true"><circle class="hint-track" cx="32" cy="32" r="29"/><circle class="charge" cx="32" cy="32" r="29" style="--turn:-90deg"/><circle class="charge" cx="32" cy="32" r="29" style="--turn:30deg"/><circle class="charge" cx="32" cy="32" r="29" style="--turn:150deg"/></svg>
+            <span class="icon icon-hint" aria-hidden="true"></span>
+          </button>
+        </div>
+
+        <p id="victory-status" class="visually-hidden" role="status" aria-live="polite"></p>
+        <div id="victory" class="victory" hidden>
+          <svg class="dawn-guide" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path pathLength="100" d="M 0 70 Q 50 -30 100 70" /></svg>
+          <button id="dawn-handle" class="dawn-handle" type="button" aria-label="Continue to the next level"><span class="dawn-disc" aria-hidden="true"></span></button>
+          <div class="victory-actions">
+            <button id="retry" class="icon-button" type="button" aria-label="Try this garden again" hidden><span class="icon icon-replay" aria-hidden="true"></span></button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="area-ceremony" class="area-ceremony" hidden aria-hidden="true"><div id="ceremony-dots" class="ceremony-dots"></div><div class="ceremony-sigil" aria-hidden="true">✦</div></div>
+    <section id="area-preview" class="area-preview" hidden aria-label="Next area">
+      <span class="area-emblem" aria-hidden="true">✦</span>
+      <div class="area-introduction">
+        <div id="new-lantern-field" class="new-lantern-field">
+          <span class="new-echo echo-nw" aria-hidden="true"></span><span class="new-echo echo-ne" aria-hidden="true"></span>
+          <span class="new-echo echo-sw" aria-hidden="true"></span><span class="new-echo echo-se" aria-hidden="true"></span>
+          <button id="new-lantern" class="new-lantern" type="button" aria-label="Touch the new lantern"><span aria-hidden="true"></span></button>
+        </div>
+        <p id="new-lantern-cue" class="cue area-whisper" role="status" aria-live="polite"></p>
+      </div>
+      <button id="return-gardens" class="return-gardens" type="button" aria-label="Return to the gardens" aria-hidden="true" tabindex="-1"><span class="icon icon-undo" aria-hidden="true"></span></button>
+      <button id="begin-area" class="return-gardens begin-area" type="button" aria-label="Enter Diagonal Garden" hidden>Enter the garden →</button>
+    </section>
+
+    <section id="expansion" class="expansion" hidden aria-label="Later lantern gardens">
+      <div class="night-veil" aria-hidden="true"></div>
+      <div class="sky" aria-hidden="true"><div class="night-haze"></div></div>
+      <div class="expansion-day-passage" aria-hidden="true"></div>
+      <section id="journey-dawn" class="journey-dawn" aria-labelledby="journey-dawn-title" hidden>
+        <h2 id="journey-dawn-title" class="visually-hidden">Every lantern has shown its reach. More gardens await.</h2>
+        <div class="journey-dawn-actions"><button id="journey-dawn-follow" class="journey-dawn-sun" type="button" aria-label="Follow the light into the next garden"></button><button id="journey-dawn-revisit" class="icon-button quiet" type="button" aria-label="Revisit the gardens"><svg aria-hidden="true"><use href="#ui-flower"/></svg></button></div>
+      </section>
+      <div id="expansion-intro" class="expansion-intro" hidden>
+        <button id="expansion-intro-menu" class="icon-button quiet intro-menu" type="button" aria-label="Area and level choices" aria-haspopup="dialog"><span class="icon icon-help" aria-hidden="true"></span></button>
+        <p id="expansion-intro-name" class="expansion-intro-name"></p>
+        <ol id="expansion-intro-sigils" class="intro-sigil-sequence" aria-label="Garden progression" tabindex="0"></ol>
+        <div class="expansion-intro-pair">
+          <div id="expansion-intro-field" class="expansion-intro-field">
+            <div id="expansion-intro-echoes" class="expansion-intro-echoes" aria-hidden="true"></div>
+            <button id="expansion-intro-lantern" class="expansion-intro-lantern" type="button" aria-label="Touch the new lantern"></button>
+          </div>
+          <div id="expansion-intro-second-field" class="expansion-intro-field" hidden>
+            <div id="expansion-intro-second-echoes" class="expansion-intro-echoes" aria-hidden="true"></div>
+            <button id="expansion-intro-second-lantern" class="expansion-intro-lantern" type="button" aria-label="Touch the other lantern"></button>
+          </div>
+        </div>
+        <p id="expansion-intro-cue" class="cue" role="status" aria-live="polite"></p>
+        <button id="expansion-intro-enter" class="expansion-quiet-button" type="button" hidden>Enter →</button>
+        <p id="expansion-intro-status" class="visually-hidden" role="status" aria-live="polite"></p>
+        <button id="expansion-intro-return" class="icon-button quiet" type="button" aria-label="Return to the garden" title="Return to the garden" hidden><svg aria-hidden="true"><use href="#ui-flower"/></svg></button>
+      </div>
+      <div id="expansion-game" class="expansion-game" hidden>
+        <header class="expansion-header">
+          <div class="expansion-marks"><div class="expansion-mark-line"><div id="expansion-dots" class="expansion-dots" role="group" aria-label="Levels"></div><button id="expansion-area-toggle" class="area-symbol expansion-area-toggle" type="button" aria-label="Choose an area" aria-expanded="false" aria-controls="expansion-area-symbols"></button><nav id="expansion-area-symbols" class="expansion-area-symbols" aria-label="Areas" aria-hidden="true" inert></nav></div><div id="expansion-move-orbs" class="move-goal" role="status" aria-live="polite" aria-describedby="expansion-goal-tip" tabindex="0"></div><span id="expansion-goal-tip" class="goal-tip" role="tooltip">Light the garden in this many moves.</span><span id="expansion-moves" class="visually-hidden" role="status" aria-live="polite"></span><p id="expansion-area-name" class="visually-hidden"></p></div>
+          <button id="expansion-menu-button" class="icon-button quiet" type="button" aria-label="Area and level choices" aria-haspopup="dialog"><span class="icon icon-help" aria-hidden="true"></span></button>
+        </header>
+        <div class="expansion-playfield"><div id="expansion-board" class="expansion-board" role="group"></div><p id="expansion-cue" class="cue" role="status" aria-live="polite"></p></div>
+        <div id="expansion-tools" class="expansion-tools"><button id="expansion-undo" class="icon-button" type="button" aria-label="Undo last press"><span class="icon icon-undo" aria-hidden="true"></span></button><button id="expansion-hint" class="icon-button" type="button" aria-label="Show a shortest next press"><svg class="hint-ring" viewBox="0 0 64 64" aria-hidden="true"><circle class="hint-track" cx="32" cy="32" r="29"/><circle class="charge" cx="32" cy="32" r="29" style="--turn:-90deg"/><circle class="charge" cx="32" cy="32" r="29" style="--turn:30deg"/><circle class="charge" cx="32" cy="32" r="29" style="--turn:150deg"/></svg><span class="icon icon-hint" aria-hidden="true"></span></button></div>
+        <p id="expansion-victory-status" class="visually-hidden" role="status" aria-live="polite"></p>
+        <div id="expansion-victory" class="expansion-victory" hidden><svg class="dawn-guide" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path pathLength="100" d="M 0 70 Q 50 -30 100 70" /></svg><button id="expansion-next" class="expansion-next" type="button" aria-label="Continue to the next level"><span class="expansion-sun-disc" aria-hidden="true"></span></button><div class="expansion-victory-actions"><button id="expansion-retry" class="icon-button" type="button" aria-label="Retry for perfect"><span class="icon icon-replay" aria-hidden="true"></span></button></div></div>
+      </div>
+    </section>
+
+    <div class="transition-cover" aria-hidden="true"></div>
+    <div id="journey-waiting" class="journey-waiting" hidden>
+      <p id="journey-status" class="visually-hidden" role="status" aria-live="polite"></p>
+      <span class="journey-signal" aria-hidden="true"></span>
+      <div class="journey-recovery"><button id="journey-retry" class="icon-button" type="button" aria-label="Try again" title="Try again"><span class="icon icon-replay" aria-hidden="true"></span></button><button id="journey-return" class="icon-button quiet" type="button" aria-label="Return to the garden" title="Return to the garden"><svg aria-hidden="true"><use href="#ui-flower"/></svg></button><button id="journey-stay" class="icon-button quiet" type="button" aria-label="Stay here" title="Stay here" hidden><span aria-hidden="true">×</span></button></div>
+    </div>
+
+    <dialog id="expansion-menu" class="expansion-menu" aria-label="Area and level choices"><div class="expansion-menu-shell">
+      <button id="expansion-erase-moon" class="moon-mark" type="button" aria-label="Erase all saved progress" aria-haspopup="dialog"></button><span class="moon-whisper" aria-hidden="true">Erase saved progress</span>
+      <div class="dialog-top"><button id="expansion-menu-close" class="close-button" type="button" aria-label="Close area choices">×</button></div>
+      <div class="menu-tabs" role="tablist" aria-label="Area options"><button id="expansion-tab-gardens" type="button" role="tab" aria-selected="true" aria-controls="expansion-panel-gardens"><svg class="menu-tab-icon" aria-hidden="true"><use href="#ui-flower"/></svg><span>Gardens</span></button><button id="expansion-tab-how" type="button" role="tab" aria-selected="false" aria-controls="expansion-panel-how"><svg class="menu-tab-icon" aria-hidden="true"><use href="#ui-cross"/></svg><span>How to play</span></button><button id="expansion-tab-proof" type="button" role="tab" aria-selected="false" aria-controls="expansion-panel-proof"><svg class="menu-tab-icon" aria-hidden="true"><use href="#ui-star"/></svg><span>Light & logic</span></button><button id="expansion-tab-settings" type="button" role="tab" aria-selected="false" aria-controls="expansion-panel-settings"><svg class="menu-tab-icon" aria-hidden="true"><use href="#ui-settings"/></svg><span>Settings</span></button></div>
+      <div id="expansion-menu-areas" class="expansion-menu-areas" role="group" aria-label="Choose an area"></div>
+      <div class="expansion-menu-stage">
+        <section id="expansion-panel-gardens" role="tabpanel" aria-labelledby="expansion-tab-gardens"><div id="expansion-area-list" class="expansion-area-detail" aria-live="polite"></div></section>
+        <section id="expansion-panel-how" class="menu-reading" role="tabpanel" aria-labelledby="expansion-tab-how" hidden><div id="expansion-rule-sketch" class="expansion-rule-sketch" aria-hidden="true"></div><p id="expansion-rule-text"></p><p>Light them all in the fewest moves.</p></section>
+        <section id="expansion-panel-proof" class="menu-reading light-study bend-reading" role="tabpanel" aria-labelledby="expansion-tab-proof" tabindex="0" hidden><span class="bend-emblem" aria-hidden="true">λ</span><h3>Under the light: Bend2</h3><p>The garden’s rules are small.<br>Their promises reach further.</p><div class="bend-steps"><span>Rules</span><i>→</i><span>Checked logic</span><i>→</i><span>Living garden</span></div><details class="quiet-disclosure"><summary>What Bend2 does here</summary><p>The original garden’s solver and state transitions are written in Bend2. Compiled Bend logic also checks gameplay, marks and hint transitions. Maintained laws cover effects, minimum routes, hints and puzzle admission.</p></details><details class="quiet-disclosure"><summary>Where the browser takes over</summary><p>JavaScript schedules generated gardens and runs the fast fixed-effect solver, checked against Bend laws and an independent GF(2) oracle. The browser draws the lanterns and handles sound, gestures and storage. Those parts need separate tests; the whole interface is not formally proved.</p></details></section>
+        <section id="expansion-panel-settings" class="menu-reading" role="tabpanel" aria-labelledby="expansion-tab-settings" hidden>
+          <fieldset class="sound-settings"><legend>Sound</legend>
+            <div class="sound-setting"><label class="preview-setting"><input id="expansion-music-setting" type="checkbox"><span>Music</span></label><label class="sound-volume"><input id="expansion-music-volume" type="range" min="0" max="100" step="1" value="100" aria-label="Music volume"><output id="expansion-music-volume-value" for="expansion-music-volume">100%</output></label></div>
+            <div class="sound-setting"><label class="preview-setting"><input id="expansion-effects-setting" type="checkbox"><span>Lantern sounds</span></label><label class="sound-volume"><input id="expansion-effects-volume" type="range" min="0" max="100" step="1" value="100" aria-label="Lantern sounds volume"><output id="expansion-effects-volume-value" for="expansion-effects-volume">100%</output></label></div>
+          </fieldset>
+          <label class="preview-setting"><input id="expansion-preview-setting" type="checkbox"><span>Preview affected lanterns</span></label>
+          <p class="setting-note">Sound begins with your first touch. Hover or focus a lantern to preview its reach.</p>
+          <fieldset class="graphics-settings"><legend>Graphics</legend>
+            <label class="preview-setting"><input id="expansion-sun-lighting-setting" type="checkbox" aria-describedby="expansion-sun-lighting-note"><span>Fancy sun lighting</span></label><p id="expansion-sun-lighting-note" class="setting-note">Moving reflections and soft light on the glass.</p>
+            <label class="preview-setting"><input id="expansion-living-glass-setting" type="checkbox" aria-describedby="expansion-living-glass-note"><span>Living glass</span></label><p id="expansion-living-glass-note" class="setting-note">Silver moonlight reveals dark glass; nearby lanterns add warm reflections.</p>
+            <label class="preview-setting"><input id="expansion-clear-shapes-setting" type="checkbox" aria-describedby="expansion-clear-shapes-note"><span>Clear lantern shapes</span></label><p id="expansion-clear-shapes-note" class="setting-note">Bright pane contours for easier recognition. Dotted recesses stay dark; interiors still show on or off.</p>
+            <label class="preview-setting"><input id="expansion-fancy-hints-setting" type="checkbox" aria-describedby="expansion-fancy-hints-note"><span>Fancy hints</span></label><p id="expansion-fancy-hints-note" class="setting-note">A travelling spark guides your next press. Reduced motion keeps the quiet glow.</p>
+            <button type="button" class="graphics-check-button" data-open-graphics-check aria-haspopup="dialog">Check this device</button><p class="setting-note">A short, local graphics test. No uploaded scores or automatic setting changes.</p>
+          </fieldset>
+          <details class="quiet-disclosure"><summary>Keep your gardens</summary><div class="journey-backup-settings"><div><button id="expansion-journey-export" type="button">Export backup</button><button id="expansion-journey-import" type="button">Import backup…</button></div><p id="expansion-journey-transfer-message" role="status"></p></div></details>
+          <details class="quiet-disclosure"><summary>Journey seeds</summary><div class="journey-seed-settings"><label>Share this journey<input id="expansion-journey-share" readonly aria-label="Journey share seed"></label><label>Begin a seed<input id="expansion-journey-seed" placeholder="lg:v3:…" autocomplete="off" spellcheck="false"></label><button id="expansion-journey-replace" type="button">Start this seed…</button><p id="expansion-journey-seed-error" role="alert"></p></div></details>
+        </section>
+      </div>
+      <div class="menu-actions"><button id="expansion-reset" type="button" aria-label="Restart this garden"><span class="action-glyph"><span class="icon icon-replay" aria-hidden="true"></span></span><span>Restart</span></button><button id="expansion-replay-intro" type="button" aria-label="Replay this area's introduction"><span class="action-glyph"><span class="icon icon-hint" aria-hidden="true"></span></span><span>First light</span></button></div>
+    </div></dialog>
+
+    <dialog id="help-dialog" class="help-dialog" aria-labelledby="help-title">
+      <div class="menu-shell">
+        <button id="erase-moon" class="moon-mark" type="button" aria-label="Erase all saved progress" aria-haspopup="dialog"></button><span class="moon-whisper" aria-hidden="true">Erase saved progress</span>
+        <div class="dialog-top">
+          <h2 id="help-title" class="visually-hidden">Garden options</h2>
+          <button id="close-help" class="close-button" type="button" aria-label="Close help">×</button>
+        </div>
+        <div class="menu-tabs" role="tablist" aria-label="Garden options">
+          <button id="tab-gardens" type="button" role="tab" aria-selected="true" aria-controls="panel-gardens" tabindex="0"><svg class="menu-tab-icon" aria-hidden="true"><use href="#ui-flower"/></svg><span>Gardens</span></button>
+          <button id="tab-how" type="button" role="tab" aria-selected="false" aria-controls="panel-how" tabindex="-1"><svg class="menu-tab-icon" aria-hidden="true"><use href="#ui-cross"/></svg><span>How to play</span></button>
+          <button id="tab-proof" type="button" role="tab" aria-selected="false" aria-controls="panel-proof" tabindex="-1"><svg class="menu-tab-icon" aria-hidden="true"><use href="#ui-star"/></svg><span>Light &amp; logic</span></button>
+          <button id="tab-settings" type="button" role="tab" aria-selected="false" aria-controls="panel-settings" tabindex="-1"><svg class="menu-tab-icon" aria-hidden="true"><use href="#ui-settings"/></svg><span>Settings</span></button>
+        </div>
+        <div class="menu-ornament" aria-hidden="true"><svg><use href="#ui-flower"/></svg><i></i><svg><use href="#ui-cross"/></svg><i></i><svg><use href="#ui-star"/></svg><i></i><svg><use href="#ui-leaf"/></svg></div>
+        <div id="menu-stage" class="menu-stage is-at-start is-at-end">
+          <section id="panel-gardens" class="menu-panel" role="tabpanel" aria-labelledby="tab-gardens" tabindex="0">
+            <div id="menu-area-navigation" class="menu-area-navigation" hidden>
+              <button id="menu-fold" class="menu-area-fold" type="button" aria-expanded="true" aria-controls="garden-choices"><span aria-hidden="true">✦</span><span>Gardens complete</span></button>
+              <button id="menu-beyond" class="menu-area-beyond" type="button" aria-label="Open the next area preview"><span aria-hidden="true">◇</span><span>Beyond</span></button>
+              <nav id="first-menu-picker" aria-label="Choose an area"></nav>
+            </div>
+            <div id="garden-choices" class="garden-choices" role="group" aria-label="Choose a garden"></div>
+          </section>
+          <section id="panel-how" class="menu-panel menu-reading" role="tabpanel" aria-labelledby="tab-how" tabindex="0" hidden>
+            <div class="rule-sketch" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+            <p>A touch changes that lantern and its nearest neighbors.</p>
+            <p>Light them all in the fewest moves.</p>
+            <div id="second-rule" class="second-rule" hidden><div class="rule-sketch diagonal" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div><p>The next light reaches diagonals.</p></div>
+          </section>
+          <section id="panel-proof" class="menu-panel menu-reading" role="tabpanel" aria-labelledby="tab-proof" tabindex="0" hidden>
+            <span class="bend-emblem" aria-hidden="true">λ</span><h3>Under the light: Bend2</h3><p>The garden’s rules are small.<br>Their promises reach further.</p><div class="bend-steps"><span>Rules</span><i>→</i><span>Checked logic</span><i>→</i><span>Living garden</span></div><details class="quiet-disclosure"><summary>What Bend2 does here</summary><p>The original garden’s solver and state transitions are written in Bend2. Compiled Bend logic also checks gameplay, marks and hint transitions. Maintained laws cover effects, minimum routes, hints and puzzle admission.</p></details><details class="quiet-disclosure"><summary>Where the browser takes over</summary><p>JavaScript schedules generated gardens and runs the fast fixed-effect solver, checked against Bend laws and an independent GF(2) oracle. The browser draws the lanterns and handles sound, gestures and storage. Those parts need separate tests; the whole interface is not formally proved.</p></details>
+          </section>
+          <section id="panel-settings" class="menu-panel menu-reading" role="tabpanel" aria-labelledby="tab-settings" tabindex="0" hidden>
+            <fieldset class="sound-settings"><legend>Sound</legend>
+              <div class="sound-setting"><label class="preview-setting"><input id="music-setting" type="checkbox"><span>Music</span></label><label class="sound-volume"><input id="music-volume" type="range" min="0" max="100" step="1" value="100" aria-label="Music volume"><output id="music-volume-value" for="music-volume">100%</output></label></div>
+              <div class="sound-setting"><label class="preview-setting"><input id="effects-setting" type="checkbox"><span>Lantern sounds</span></label><label class="sound-volume"><input id="effects-volume" type="range" min="0" max="100" step="1" value="100" aria-label="Lantern sounds volume"><output id="effects-volume-value" for="effects-volume">100%</output></label></div>
+            </fieldset>
+            <label class="preview-setting"><input id="preview-setting" type="checkbox"><span>Preview affected lanterns</span></label>
+            <p class="setting-note">Sound begins with your first touch. Hover or focus a lantern to preview its reach.</p>
+            <fieldset class="graphics-settings"><legend>Graphics</legend>
+              <label class="preview-setting"><input id="sun-lighting-setting" type="checkbox" aria-describedby="sun-lighting-note"><span>Fancy sun lighting</span></label><p id="sun-lighting-note" class="setting-note">Moving reflections and soft light on the glass.</p>
+              <label class="preview-setting"><input id="living-glass-setting" type="checkbox" aria-describedby="living-glass-note"><span>Living glass</span></label><p id="living-glass-note" class="setting-note">Silver moonlight reveals dark glass; nearby lanterns add warm reflections.</p>
+              <label class="preview-setting"><input id="clear-shapes-setting" type="checkbox" aria-describedby="clear-shapes-note"><span>Clear lantern shapes</span></label><p id="clear-shapes-note" class="setting-note">Bright pane contours for easier recognition. Dotted recesses stay dark; interiors still show on or off.</p>
+              <label class="preview-setting"><input id="fancy-hints-setting" type="checkbox" aria-describedby="fancy-hints-note"><span>Fancy hints</span></label><p id="fancy-hints-note" class="setting-note">A travelling spark guides your next press. Reduced motion keeps the quiet glow.</p>
+              <button type="button" class="graphics-check-button" data-open-graphics-check aria-haspopup="dialog">Check this device</button><p class="setting-note">A short, local graphics test. No uploaded scores or automatic setting changes.</p>
+            </fieldset>
+            <details class="quiet-disclosure"><summary>Keep your gardens</summary><div class="journey-backup-settings"><div><button id="journey-export" type="button">Export backup</button><button id="journey-import" type="button">Import backup…</button></div><p id="journey-transfer-message" role="status"></p></div></details>
+            <details class="quiet-disclosure"><summary>Journey seeds</summary><div class="journey-seed-settings"><label>Share this journey<input id="journey-share" readonly aria-label="Journey share seed"></label><label>Begin a seed<input id="journey-seed" placeholder="lg:v3:…" autocomplete="off" spellcheck="false"></label><button id="journey-replace" type="button">Start this seed…</button><p id="journey-seed-error" role="alert"></p></div></details>
+          </section>
+        </div>
+        <div class="menu-actions">
+          <button id="menu-reset" type="button" aria-label="Restart this garden"><span class="action-glyph"><span class="icon icon-replay" aria-hidden="true"></span></span><span>Restart</span></button>
+          <button id="menu-intro" type="button" aria-label="Replay the introduction"><span class="action-glyph"><span class="icon icon-hint" aria-hidden="true"></span></span><span>First light</span></button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="journey-transfer-dialog" class="journey-transfer-dialog" aria-labelledby="journey-transfer-title" aria-describedby="journey-transfer-description">
+      <div class="journey-transfer-panel">
+        <button id="journey-transfer-close" class="close-button" type="button" aria-label="Cancel backup import">×</button>
+        <h2 id="journey-transfer-title">Bring your gardens home</h2>
+        <p id="journey-transfer-description">Preview a complete progress backup before importing it. A seed alone is not a progress backup.</p>
+        <label class="journey-transfer-file">Choose a backup<input id="journey-transfer-file" type="file" accept="application/json,.json" /></label>
+        <p id="journey-transfer-status" role="status" aria-live="polite"></p>
+        <section id="journey-transfer-preview" aria-label="Checked backup preview" hidden>
+          <dl id="journey-transfer-summary"></dl>
+          <details><summary>Validation and device binding</summary><p id="journey-transfer-binding"></p><p id="journey-transfer-provenance"></p></details>
+          <p class="journey-transfer-warning">Import replaces your current progress and restores saved sound settings. Your current progress is kept as a recovery backup on this device; importing does not erase it.</p>
+        </section>
+        <div class="journey-transfer-actions"><button id="journey-transfer-cancel" type="button">Cancel</button><button id="journey-transfer-confirm" type="button" disabled>Import this progress</button><button id="journey-transfer-reload" type="button" hidden>Reload to finish recovery</button></div>
+      </div>
+    </dialog>
+
+    <dialog id="graphics-check" class="graphics-check" aria-labelledby="graphics-check-title">
+      <div class="graphics-check-shell">
+        <h2 id="graphics-check-title">Device lighting check</h2>
+        <p class="setting-note">A separate sample garden. Your progress and choices stay untouched.</p>
+        <div class="graphics-check-body">
+          <div data-benchmark-scene></div>
+          <p data-benchmark-status role="status" aria-live="polite"></p>
+          <section class="benchmark-rating" data-benchmark-rating role="status" aria-live="polite" hidden></section>
+          <div data-benchmark-results></div>
+        </div>
+        <button type="button" class="graphics-check-button" data-benchmark-close>Stop check</button>
+      </div>
+    </dialog>
+    <dialog id="erase-dialog" class="erase-dialog" aria-labelledby="erase-title" aria-describedby="erase-description">
+      <div class="erase-panel">
+        <button id="close-erase" class="close-button" type="button" aria-label="Cancel progress deletion">×</button>
+        <span class="erase-crescent" aria-hidden="true"></span>
+        <h2 id="erase-title">Let the tide take it all?</h2>
+        <p id="erase-description">This will erase every saved garden, perfect mark, hint charge, and unlocked area on this device. It cannot be undone.</p>
+        <label class="erase-ack"><input id="erase-ack" type="checkbox" /><span>I understand my Lantern Garden progress will be lost.</span></label>
+        <p id="erase-countdown" class="erase-countdown" role="status" aria-live="polite" hidden></p>
+        <p id="erase-error" class="erase-error" role="alert" hidden>Progress could not be erased. Please try again.</p>
+        <div class="erase-actions"><button id="cancel-erase" type="button">Cancel</button><button id="confirm-erase" type="button" disabled>Delete my progress</button></div>
+      </div>
+    </dialog>
+    <div id="eclipse-veil" class="eclipse-veil" hidden aria-hidden="true"><span class="eclipse-disc"></span></div>
+    <section id="journey-boot-error" class="journey-boot-error" hidden><p id="journey-boot-message" class="visually-hidden" role="alert">Garden paused. Open it again.</p><button class="icon-button" type="button" aria-label="Open the garden again" title="Open the garden again" onclick="location.reload()"><span class="icon icon-replay" aria-hidden="true"></span></button></section>
+
+    <script>
+      if (location.protocol === "file:") {
+        document.getElementById("game").hidden = true;
+        document.getElementById("file-warning").hidden = false;
+      }
+    </script>
+    
+  <script src="./telegram-entry-1cdbc2616aee.js"></script>
+  </body>
+</html>
