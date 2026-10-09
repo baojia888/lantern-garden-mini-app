@@ -5,6 +5,7 @@
   const root = document.documentElement;
   root.dataset.telegram = 'true';
   const fit = () => {
+    root.dataset.telegramFullscreen = String(Boolean(app.isFullscreen));
     const safe = app.safeAreaInset ?? {};
     const content = app.contentSafeAreaInset ?? {};
     for (const edge of ['top','right','bottom','left']) {
@@ -14,10 +15,18 @@
   app.expand();
   app.setHeaderColor('#101615');
   app.setBackgroundColor('#101615');
+  // Expansion alone does not prevent Telegram's minimize/close swipe.
+  if (app.isVersionAtLeast?.('7.7')) app.disableVerticalSwipes();
+  if (app.isVersionAtLeast?.('8.0') && !app.isFullscreen) {
+    try { app.requestFullscreen(); }
+    catch { /* Client refusal keeps the expanded, playable layout. */ }
+  }
   fit();
   app.onEvent('safeAreaChanged', fit);
   app.onEvent('contentSafeAreaChanged', fit);
   app.onEvent('viewportChanged', fit);
+  app.onEvent('fullscreenChanged', fit);
+  app.onEvent('fullscreenFailed', fit);
   const style = document.createElement('style');
   style.textContent = `html[data-telegram] body { padding: var(--telegram-inset-top) var(--telegram-inset-right) var(--telegram-inset-bottom) var(--telegram-inset-left); }
     html[data-telegram] :is(.game,.prelude,.puzzle,.expansion,.expansion-intro,.expansion-game,.area-preview) { min-height: calc(100svh - var(--telegram-inset-top) - var(--telegram-inset-bottom)); }`;
